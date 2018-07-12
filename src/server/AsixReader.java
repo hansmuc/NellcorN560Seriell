@@ -25,7 +25,7 @@ import rules.NoDataException;
  * Reads data from N560 via ASIX Electronix Co Wireless adapter AX220xx RS232 to
  * WIFI after network disconnection the socket is reconnect.
  * 
- * @author xx
+ * @author xxx
  *
  */
 public class AsixReader extends Thread implements N560DataServerInterface {
