@@ -30,8 +30,8 @@ import rules.NoDataException;
  */
 public class AsixReader extends Thread implements N560DataServerInterface {
 
-	private String ASIX_PROXY_OXYIP = "192.168.0.5"; // TODO make configurable
-	private int ASIX_PROXY_OXYPORT = 5000; // TODO make configurable
+	private String[] ASIX_PROXY_OXYIP = {"192.168.0.5","192.168.0.6"}; // TODO make configurable
+	private int[] ASIX_PROXY_OXYPORT =  {5000, 23 };// TODO make configurable
 
 	private Socket inputsocket = null;
 	private Date prevDate = null;
@@ -42,7 +42,7 @@ public class AsixReader extends Thread implements N560DataServerInterface {
 
 
 	/* server and port configuration */
-	public AsixReader(String aSIX_PROXY_OXYIP, int aSIX_PROXY_OXYPORT) {
+	public AsixReader(String[] aSIX_PROXY_OXYIP, int[] aSIX_PROXY_OXYPORT) {
 		ASIX_PROXY_OXYIP = aSIX_PROXY_OXYIP;
 		ASIX_PROXY_OXYPORT = aSIX_PROXY_OXYPORT;
 	}
@@ -55,12 +55,16 @@ public class AsixReader extends Thread implements N560DataServerInterface {
 	 * the thread loop
 	 */
 	public void run() {
-		System.out.println("N560GetterandParserThread started");
+		System.out.println("**********************N560GetterandParserThread started*****************");
+		int port_index = 0;
+		int max_port_index= ASIX_PROXY_OXYPORT.length -1;
 		while (true) {
 			try {
-				System.out.println("Try to connect to ..."+ASIX_PROXY_OXYIP+"/"+ ASIX_PROXY_OXYPORT);
-				connect();
-				System.out.println("Connection established ...readloop ...");
+				int Local_ASIX_PROXY_OXYPORT =ASIX_PROXY_OXYPORT[port_index] ;
+				String Local_ASIX_PROXY_OXYIP =ASIX_PROXY_OXYIP[port_index] ;
+				System.out.println("****************Try to connect to ..."+Local_ASIX_PROXY_OXYIP+"/"+ Local_ASIX_PROXY_OXYPORT);
+				connect(Local_ASIX_PROXY_OXYIP,Local_ASIX_PROXY_OXYPORT);
+				System.out.println("**************Connection established ...readloop ...");
 				readLoop();
 			} catch (IOException e) {
 				System.out.println(e.fillInStackTrace());
@@ -80,6 +84,10 @@ public class AsixReader extends Thread implements N560DataServerInterface {
 				}
 
 			}
+			
+			port_index++;
+			if(port_index > ASIX_PROXY_OXYPORT.length -1)
+				port_index=0;
 		} // while
 	}
 
@@ -89,8 +97,8 @@ public class AsixReader extends Thread implements N560DataServerInterface {
 	 * @throws UnknownHostException
 	 * @throws IOException
 	 */
-	private void connect() throws UnknownHostException, IOException {
-		inputsocket = new Socket(ASIX_PROXY_OXYIP, ASIX_PROXY_OXYPORT);
+	private void connect(String ip ,int port) throws UnknownHostException, IOException {
+		inputsocket = new Socket(ip, port);
 		inputsocket.setSoTimeout(4000); // 4sec timeout then read returns no
 										// block!!!
 		instream = inputsocket.getInputStream();
